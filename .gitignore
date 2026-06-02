@@ -1,7 +1,6 @@
-    node_modules/
-    .env
-    dist/
-    .DS_Store
-    
-    docs/
-    publish/
+node_modules/
+.env
+dist/
+.DS_Store
+docs/
+publish/
