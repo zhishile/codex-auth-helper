@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>隐私政策 - Codex 登陆助手 (Codex Auth Helper)</title>
+  <meta name="description"
+    content="Codex 登陆助手 (Codex Auth Helper) Chrome 扩展的官方隐私政策声明，详细说明我们 100% 纯本地运行、零数据上传、权限最小化及保护用户数据隐私的承诺。">
+  <meta name="keywords" content="Codex Auth Helper, 隐私政策, Privacy Policy, Chrome 扩展, 数据安全">
+  <!-- 引入全局极客绿样式表 -->
+  <link rel="stylesheet" href="style-green.css">
+
+  <style>
+    /* 隐私页面定制专属高端文章排版样式 */
+    .privacy-container {
+      padding-top: 140px;
+      padding-bottom: 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .privacy-header {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 3.5rem auto;
+    }
+
+    .privacy-header h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 70%, rgba(255, 255, 255, 0.4) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .privacy-header p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+    }
+
+    .privacy-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 3.5rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5),
+        0 0 50px rgba(16, 185, 129, 0.02);
+      max-width: 900px;
+      margin: 0 auto;
+      transition: var(--transition-normal);
+    }
+
+    .privacy-card:hover {
+      border-color: rgba(16, 185, 129, 0.2);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6),
+        0 0 60px rgba(16, 185, 129, 0.05);
+    }
+
+    .meta-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .meta-tag {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--color-primary);
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-weight: 600;
+    }
+
+    /* 章节排版 */
+    .section-block {
+      margin-bottom: 3rem;
+    }
+
+    .section-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      position: relative;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 20px;
+      background: var(--grad-aurora);
+      border-radius: 2px;
+    }
+
+    .section-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      text-align: justify;
+    }
+
+    /* 三大承诺卡片 */
+    .promise-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .promise-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .promise-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: var(--transition-fast);
+    }
+
+    .promise-card:hover {
+      background: rgba(16, 185, 129, 0.03);
+      border-color: rgba(16, 185, 129, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .promise-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(16, 185, 129, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      margin: 0 auto 1rem auto;
+    }
+
+    .promise-card h4 {
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .promise-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* 权限解析表格 */
+    .permissions-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+    }
+
+    .permissions-table th,
+    .permissions-table td {
+      border: 1px solid var(--border-color);
+      padding: 1rem;
+      text-align: left;
+    }
+
+    .permissions-table th {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .permissions-table td {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .permissions-table code {
+      font-family: var(--font-mono);
+      background: rgba(16, 185, 129, 0.08);
+      color: var(--color-accent);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+
+    /* 英文翻译对照 */
+    .lang-translation {
+      background: rgba(255, 255, 255, 0.01);
+      border-left: 2px dashed rgba(255, 255, 255, 0.1);
+      padding-left: 1.25rem;
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      color: #64748b;
+      font-style: italic;
+    }
+
+    /* 纯色高亮文本 */
+    .highlight-span {
+      color: var(--color-primary);
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 1. 极致毛玻璃导航栏 -->
+  <header class="header scrolled">
+    <div class="container">
+      <div class="logo-wrapper">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="logo-text">Codex登陆助手</span>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-link">返回首页</a>
+        <a href="index.html#features" class="nav-link">功能特点</a>
+        <a href="index.html#faq" class="nav-link">常见问题</a>
+      </nav>
+
+      <div class="nav-cta">
+        <a href="index.html#cta" class="btn btn-primary"><span>安装扩展</span></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. 隐私政策卡片展示区 -->
+  <section class="privacy-container">
+    <div class="container">
+
+      <div class="privacy-header">
+        <h1>隐私政策</h1>
+        <p>Privacy Policy</p>
+      </div>
+
+      <div class="privacy-card">
+        <!-- 元数据栏 -->
+        <div class="meta-info">
+          <div>本政策适用于：<strong>Codex 登陆助手 / Codex Auth Helper (Chrome Extension)</strong></div>
+          <div class="meta-tag">生效日期: 2026年6月1日</div>
+        </div>
+
+        <!-- 导言 -->
+        <div class="section-block">
+          <p class="section-text">
+            本隐私政策详细说明了 <span class="highlight-span">Codex 登陆助手 (Codex Auth
+              Helper)</span>（以下简称“本插件”）在您安装及使用本插件过程中的用户数据收集、处理及安全保护惯例。我们极其重视用户的隐私和安全，承诺采取最高标准的保护措施，确保您的敏感会话凭证绝对安全。
+          </p>
+          <div class="lang-translation">
+            This Privacy Policy details the data collection, processing, and security practices of Codex Auth Helper
+            (hereinafter referred to as "the Extension") during its installation and usage. We highly value your privacy
+            and security, promising to enforce the highest standards to keep your credentials absolutely secure.
+          </div>
+        </div>
+
+        <!-- 三大承诺核心区域 -->
+        <div class="section-block">
+          <h3 class="section-title">核心安全承诺 / Core Assurances</h3>
+          <p class="section-text">我们坚守以下三项用户隐私承诺，数据完全由您本地掌控：</p>
+
+          <div class="promise-grid">
+            <div class="promise-card">
+              <div class="promise-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              </div>
+              <h4>零网络上传</h4>
+              <p>所有数据处理及配置文件打包完全在您的浏览器本地沙箱中完成，无任何网络同步上传行为。</p>
+            </div>
+
+            <div class="promise-card">
+              <div class="promise-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </div>
+              <h4>零数据留存</h4>
+              <p>插件仅在内存中瞬时处理 Session，不进行本地数据库持久化，离开内存或卸载插件即刻完全销毁。</p>
+            </div>
+
+            <div class="promise-card">
+              <div class="promise-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+              </div>
+              <h4>零第三方披露</h4>
+              <p>我们绝不与任何第三方、广告商或数据分析机构共享、出售或出让任何用户数据，坚守合规底线。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. 数据收集声明 -->
+        <div class="section-block">
+          <h3 class="section-title">数据收集声明 / Data Collection Declarations</h3>
+          <p class="section-text">
+            <strong>我们不收集任何用户数据。</strong> 本插件为纯本地运行的离线辅助工具。本插件不收集、不记录、不传输您的个人身份信息
+            (PII)、地理定位、设备标识符、浏览器历史记录，亦不包含任何第三方跟踪器或分析 SDK。
+          </p>
+          <p class="section-text">
+            当您主动使用本插件的“一键提取”功能时，插件仅在内存中读取您当前已登录的 ChatGPT 会话凭证 (Session Token) 并进行本地格式解析，以便将其组装并写入您导出的
+            <code>auth.json</code> 文件。此过程完全不与任何外部服务进行数据交换。
+          </p>
+          <div class="lang-translation">
+            <strong>We do not collect any user data.</strong> The Extension operates completely offline. We do not
+            collect, store, or transmit your personally identifiable information (PII), geolocation, browser history, or
+            account credentials. When you actively trigger the capture feature, the ChatGPT session token is temporarily
+            accessed in-memory solely for local parsing and file download.
+          </div>
+        </div>
+
+        <!-- 2. 权限声明及合理使用 -->
+        <div class="section-block">
+          <h3 class="section-title">权限使用及合理性 / Declarations of Permissions</h3>
+          <p class="section-text">
+            为了实现核心的会话配置文件导出功能，本插件在 <code>manifest.json</code> 中声明了以下必要权限。我们在此清晰披露这些权限的具体正当用途，绝不滥用或跨越授权边界：
+          </p>
+
+          <table class="permissions-table">
+            <thead>
+              <tr>
+                <th style="width: 25%;">声明权限 / Host Permission</th>
+                <th style="width: 20%;">权限级别</th>
+                <th>正当合理的用途解释 / Justification</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>downloads</code></td>
+                <td>中度权限</td>
+                <td>
+                  允许本插件在本地生成 <code>auth.json</code> 文件，并自动调用浏览器的下载沙盒将其保存到您的本机指定下载目录中。该行为<strong>100%
+                    由用户手动触发</strong>，不涉及任何后台静默或非授权的文件下载。
+                </td>
+              </tr>
+              <tr>
+                <td><code>https://chatgpt.com/</code></td>
+                <td>敏感主机访问</td>
+                <td>
+                  允许本插件跨域向用户已成功登录的 <code>https://chatgpt.com/api/auth/session</code> 接口发起数据请求，以提取在当前浏览器进程中已存的登录
+                  Session。<strong>我们仅访问该特定域名</strong>，不涉及也不干扰任何其他外部网页的数据。
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lang-translation">
+            We only request the absolute minimum permissions needed for core features. The `downloads` API is used
+            strictly to save the locally generated 'auth.json' config file, triggered solely by clicking the download
+            button. The host permission on `https://chatgpt.com/` is required solely to fetch the current authenticated
+            session cookie for local backup, without touching any other websites.
+          </div>
+        </div>
+
+        <!-- 3. 数据安全保障措施 -->
+        <div class="section-block">
+          <h3 class="section-title">数据安全与透明保障 / Data Security and Transparency</h3>
+          <p class="section-text">
+            为了确保极致的数据安全，本插件采用了以下安全防护机制：
+          </p>
+          <ul class="section-text" style="padding-left: 1.5rem; margin-bottom: 1rem;">
+            <li><strong>纯内存瞬时处理：</strong> 您的 ChatGPT 登录凭据在被捕获后，仅在插件的运行时内存中进行临时解析并立即释放，插件没有使用数据库或本地存储（如 localStorage /
+              Chrome Storage）进行持久化保存。</li>
+            <li><strong>闭环数据下载：</strong> 本插件使用闭环 Data URL 编码技术直接将配置文件输出为下载流，这意味着数据转换全部闭环在浏览器沙盒环境内，不存在任何数据离线窃取通道。</li>
+            <li><strong>完全开源透明：</strong> 本插件的完整源代码在 GitHub 上公开披露。任何人均可对我们的插件逻辑进行独立审查和安全审计。</li>
+          </ul>
+          <div class="lang-translation">
+            To guarantee security, your credentials exist strictly in-memory during packaging and are immediately
+            released. No local persistent storage (localStorage/chrome.storage) is used. The 'auth.json' is compiled
+            into a Data URL for sandboxed local download, ensuring a closed loop. The source code is open and audited.
+          </div>
+        </div>
+
+        <!-- 4. Chrome Web Store 合规声明 -->
+        <div class="section-block">
+          <h3 class="section-title">谷歌应用商店合规性声明 / Chrome Web Store Compliance</h3>
+          <p class="section-text">
+            本隐私政策和数据使用方式完全符合《谷歌 Chrome 网上应用店开发者计划政策》（Chrome Web Store Developer Program
+            Policies）的最新合规要求，特别是关于数据披露、数据利用限制以及最小权限（Limited Use & Single-Purpose）的核心条款：
+          </p>
+          <ul class="section-text" style="padding-left: 1.5rem; margin-bottom: 1rem;">
+            <li>我们特此郑重声明：<strong>绝不向任何第三方出售或转让您的任何用户数据</strong>。</li>
+            <li>我们声明：<strong>绝不将获取的用户数据用于信用评估、借贷、定向广告以及其他商业化追踪目的</strong>。</li>
+            <li>我们声明：<strong>绝不将数据用于除本插件向您承诺的核心功能（本地配置导出与登录状态检测）以外的任何用途</strong>。</li>
+          </ul>
+          <div class="lang-translation">
+            We solemnly declare that we do not sell or transfer user data to third parties. We do not use user data for
+            credit assessment, lending, targeted advertising, or tracking. Data is strictly processed for the
+            single-purpose core function promised by this Extension.
+          </div>
+        </div>
+
+        <!-- 5. 政策变更与联系方式 -->
+        <div class="section-block">
+          <h3 class="section-title">政策变更与反馈联系 / Policy Updates & Contact</h3>
+          <p class="section-text">
+            我们可能会根据 Chrome Web Store
+            的最新合规性规则或插件功能优化，适时更新本隐私政策。若有变更，我们将在本页面进行公示。由于本插件为完全本地运行且不收集任何用户个人联系信息（如邮箱），因此我们无法主动通知您，请您定期访问此页面了解最新状态。
+          </p>
+          <p class="section-text">
+            如果您对本隐私政策或数据处理有任何疑问、建议或发现任何安全漏洞，请通过以下方式与我们取得联系：
+          </p>
+          <ul class="section-text" style="padding-left: 1.5rem; list-style-type: none;">
+            <li>📧 官方联系邮箱 / Email: <a href="mailto:support@codexauthhelper.local"
+                class="highlight-span">support@codexauthhelper.local</a></li>
+            <li>🌐 GitHub 议题中心 / Issue Tracker: <a href="https://github.com" target="_blank" rel="noopener"
+                class="highlight-span">访问 GitHub 仓库提交反馈</a></li>
+          </ul>
+          <div class="lang-translation">
+            This policy may be updated to reflect CWS policy changes. Any updates will be published on this page. For
+            questions, suggestions, or security audits, contact us via support@codexauthhelper.local or open an issue on
+            our GitHub repository.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. Footer 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="logo-wrapper">
+            <div class="logo-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <span class="logo-text">Codex登陆助手</span>
+          </div>
+          <p>
+            为 ChatGPT 登录设计的无痛 Session 提取与配置工具，本地沙箱运行，守护隐私，助力高能开发。
+          </p>
+        </div>
+        <div class="footer-links">
+          <div class="link-group">
+            <h5>导航</h5>
+            <a href="index.html">返回首页</a>
+            <a href="index.html#features">功能特点</a>
+            <a href="index.html#faq">常见问题</a>
+          </div>
+          <div class="link-group">
+            <h5>相关</h5>
+            <a href="privacy.html">隐私政策</a>
+            <a href="https://github.com" target="_blank" rel="noopener">GitHub 仓库</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>2026 &copy; Codex Auth Helper</p>
+        <div class="footer-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+          <span>已通过本地 Chromium 安全审计</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>

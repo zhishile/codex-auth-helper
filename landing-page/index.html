@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codex 登陆助手 (Codex Auth Helper) - 一键越过 ChatGPT 登录手机号验证</title>
+  <meta name="description"
+    content="专为 Codex 免重复登录设计！安全地本地提取并解析 ChatGPT 会话 Session，一键生成 auth.json 配置文件。100% 纯本地运行，数据不上云。">
+  <meta name="keywords" content="Codex, ChatGPT, auth.json, Chrome 插件, 手机号验证绕过, Session 提取">
+  <!-- 引入全新物理文件名样式表（强力击穿一切浏览器顽固磁盘缓存） -->
+  <link rel="stylesheet" href="style-green.css">
+</head>
+
+<body>
+
+  <!-- 1. 极致毛玻璃导航栏 -->
+  <header class="header" id="main-header">
+    <div class="container">
+      <div class="logo-wrapper">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="logo-text">Codex登陆助手</span>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="#features" class="nav-link">功能特点</a>
+        <a href="#workflow" class="nav-link">使用步骤</a>
+        <a href="#faq" class="nav-link">常见问题</a>
+      </nav>
+
+      <div class="nav-cta">
+        <a href="privacy.html" class="btn btn-secondary" id="nav-btn-sec">隐私政策</a>
+        <a href="#cta" class="btn btn-primary" id="nav-btn-pri"><span>立即下载</span></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. Hero Section 区域 -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">
+          <span class="hero-tag-dot"></span>
+          <span>V1.0.0 正式版发布 —— 专为 Codex 开发打造</span>
+        </div>
+        <h1>
+          跃过验证，顺畅连接<br>
+          <span class="hero-highlight">Codex 快捷登录</span>
+        </h1>
+
+      </div>
+      <!-- <p>
+        针对 Codex 登录频繁失效、要求手机号码验证痛点设计的 Chrome 插件。本地极速提取并自动解析 ChatGPT 登录信息，秒速转换为 Codex 身份配置文件，100% 本地安全处理。
+      </p> -->
+      <div class="hero-actions">
+        <a href="#cta" class="btn btn-primary" id="hero-btn-download">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+          </svg>
+          <span>一键安装 Chrome 扩展</span>
+        </a>
+        <a href="#workflow" class="btn btn-secondary" id="hero-btn-learn">
+          <span>了解运行原理</span>
+        </a>
+      </div>
+    </div>
+    <br />
+
+    <!-- 模拟插件高保真交互控制面板 -->
+    <div class="hero-mockup-wrapper">
+      <div class="mockup-container" id="mockup-panel">
+        <div class="mockup-header">
+          <div class="mockup-controls">
+            <span class="mockup-dot red"></span>
+            <span class="mockup-dot yellow"></span>
+            <span class="mockup-dot green"></span>
+          </div>
+          <div class="mockup-title">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <span>local-session-extractor // popup.html</span>
+          </div>
+          <div class="mockup-actions">
+            <span class="mockup-action-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+              </svg>
+            </span>
+          </div>
+        </div>
+        <div class="mockup-body">
+          <!-- 模拟控制台左侧 -->
+          <div class="mockup-sidebar">
+            <div class="mockup-sidebar-top">
+              <div class="plugin-brand">
+                <div class="plugin-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                  </svg>
+                </div>
+                <div class="plugin-info">
+                  <h4>Codex 登陆助手</h4>
+                  <span>Codex Auth Helper v1.0.0</span>
+                </div>
+              </div>
+
+              <div class="plugin-status-card">
+                <div class="status-row">
+                  <span class="status-label">宿主连接状态</span>
+                  <span class="status-value" id="host-status">
+                    <span class="status-badge" id="host-badge">已连接</span>
+                  </span>
+                </div>
+                <div class="status-row">
+                  <span class="status-label">ChatGPT 登录</span>
+                  <span class="status-value" id="login-status">已检测</span>
+                </div>
+                <div class="status-row">
+                  <span class="status-label">账户等级</span>
+                  <span class="status-value" id="user-tier">ChatGPT Plus</span>
+                </div>
+              </div>
+
+              <button class="btn-trigger" id="btn-mock-extract">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10" />
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+                <span id="btn-extract-text">一键提取并解析</span>
+              </button>
+            </div>
+
+            <div class="sidebar-note">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+              <span>数据完全保存在您的本地浏览器中，绝不上云，保障核心账户数据安全。</span>
+            </div>
+          </div>
+
+          <!-- 模拟控制台右侧 -->
+          <div class="mockup-main">
+            <div class="main-tab-bar">
+              <div class="tabs">
+                <span class="tab active" id="tab-json">智能解析</span>
+                <span class="tab" id="tab-log">实时日志</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-muted);" id="mockup-time">
+                有效期: 2026-06-25 10:39:11
+              </div>
+            </div>
+
+            <div class="code-wrapper" id="console-display">
+              <div class="code-empty" id="console-empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                  <path
+                    d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                </svg>
+                <span>等待一键抓取并生成配置文件...</span>
+              </div>
+              <div class="code-container" id="console-code-state" style="display: none;"></div>
+            </div>
+
+            <div class="code-action-bar">
+              <button class="code-btn" id="btn-mock-copy" disabled>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+                <span id="btn-copy-text">复制配置</span>
+              </button>
+              <button class="code-btn" id="btn-mock-download" disabled>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                </svg>
+                <span>下载 auth.json</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- 3. 特性卡片区域 (Features) -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">核心优势</span>
+        <h2>为什么选择 Codex 登陆助手？</h2>
+        <p>告别繁杂的命令行 Session 提取，为 Codex 量身定制的本地敏捷解决方案。</p>
+      </div>
+
+      <div class="features-grid">
+        <!-- 卡片 1 -->
+        <div class="feat-card reveal">
+          <div class="feat-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <h3>100% 纯本地运行</h3>
+          <p>您的所有核心 Session 数据和凭证均保存在浏览器本地，插件绝不向任何第三方服务器上传任何数据，保障账号的绝对安全。</p>
+        </div>
+
+        <!-- 卡片 2 -->
+        <div class="feat-card reveal">
+          <div class="feat-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+          </div>
+          <h3>一键提取与智能解析</h3>
+          <p>当您在浏览器中登录 ChatGPT 后，点击扩展即可自动提取 Session 凭证，并智能解析过期时间、用户认证级别等状态。</p>
+        </div>
+
+        <!-- 卡片 3 -->
+        <div class="feat-card reveal">
+          <div class="feat-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+          </div>
+          <h3>完美生成配置文件</h3>
+          <p>自动将提取到的数据整理为 Codex 平台完全兼容的 <code>auth.json</code> 配置，提供一键复制与快速文件下载，即下即用。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 工作流程区域 (How It Works) -->
+  <section class="workflow" id="workflow">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">精简工作流</span>
+        <h2>只需三步，秒速唤醒 Codex</h2>
+        <p>极致的自动化配置流程，助您摆脱手机号码登录验证与过期困扰。</p>
+      </div>
+
+      <div class="workflow-steps">
+        <!-- 步骤 1 -->
+        <div class="step-card reveal">
+          <div class="step-number">01</div>
+          <h3>登录 ChatGPT 网页</h3>
+          <p>使用Chrome浏览器正常登录 ChatGPT，保持网页为在线活动状态。</p>
+        </div>
+
+        <!-- 步骤 2 -->
+        <div class="step-card reveal">
+          <div class="step-number">02</div>
+          <h3>激活插件 一键导出身份信息</h3>
+          <p>点击浏览器右上角插件图标，智能解析身份信息之后点击“导出身份信息”按钮，将文件 auth.json 保存到本地。</p>
+        </div>
+
+        <!-- 步骤 3 -->
+        <div class="step-card reveal">
+          <div class="step-number">03</div>
+          <h3>载入 auth.json 到 Codex 配置目录</h3>
+          <p>将 auth.json 移动到本机 Codex 配置目录中：</p>
+          <div class="path-details">
+            <p><strong>Windows:</strong> <code>%USERPROFILE%\.codex\auth.json</code></p>
+            <p><strong>macOS:</strong> <code>~/.codex/auth.json</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 常见问题 (FAQ) -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">答疑解惑</span>
+        <h2>常见问题解答</h2>
+        <p>关于 Codex 登陆助手，你想知道的解答都在这里。</p>
+      </div>
+
+      <div class="faq-list">
+        <!-- 问题 1 -->
+        <details class="faq-item reveal">
+          <summary>
+            <span>为什么我用 Codex 登录时会要求输入手机验证码，而这工具能解决？</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </summary>
+          <div class="faq-content">
+            Codex 经常因为安全校验而触发手机验证机制。使用本插件可以先在 ChatGPT 官网完成常规登录，然后将其 Session 凭证提取为 auth.json。通过直接导入凭证，Codex
+            就能够跳过手机短信校验和各种盾，安全畅快地完成对接。
+          </div>
+        </details>
+
+        <!-- 问题 2 -->
+
+        <details class="faq-item reveal">
+          <summary>
+            <span>使用这个插件安全吗？会泄露我的 ChatGPT 账户 Session 吗？</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </summary>
+          <div class="faq-content">
+            极度安全。插件代码完全在本地浏览器沙箱中运行，无任何外部服务器同步接口，我们 100% 承诺数据不上云。本插件在 Github 上开发所有源代码，你可以随时查看并核对插件的打包源代码，绝对不收集任何敏感隐私。
+          </div>
+        </details>
+
+        <!-- 问题 3 -->
+        <details class="faq-item reveal">
+          <summary>
+            <span>我的身份验证信息能保持多久有效？</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </summary>
+          <div class="faq-content">
+            有效时间完全取决于 OpenAI ChatGPT 官方 Session 自身的生存时间。通常 Session 的有效期会长达两周至一个月。插件会在提取时对凭证中的 <code>expires</code>
+            字段自动进行毫秒级解析，并在模拟面板中提醒您具体还有多久失效。过期后您仅需再次轻轻一点击，重新覆盖即可。
+          </div>
+        </details>
+
+        <!-- 问题 4 -->
+        <details class="faq-item reveal">
+          <summary>
+            <span>支持哪些浏览器？</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </summary>
+          <div class="faq-content">
+            支持所有基于 Chromium 内核的浏览器，例如 Google Chrome, Microsoft Edge, Arc, Brave, Opera
+            等。用户只需开启浏览器的“开发者模式”，选择“加载已解压的扩展程序”并将包含 manifest.json 的根文件夹导入即可。
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. CTA Section -->
+  <section class="cta-banner" id="cta">
+    <div class="container">
+      <div class="cta-box reveal">
+        <div class="cta-box-content">
+          <h2>即刻开启你的 Codex 敏捷开发之旅</h2>
+          <p>抛弃繁琐验证屏障，让高效率的开发心流不再中断。100% 纯本地运行的 Codex 安全登录伴侣。</p>
+          <a href="#" class="btn btn-primary" id="footer-btn-download">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+            </svg>
+            <span>一键安装 Chrome 扩展</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="logo-wrapper">
+            <div class="logo-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <span class="logo-text">Codex手机验证助手</span>
+          </div>
+          <p>
+            为 ChatGPT 登录设计的无痛 Session 提取与配置工具，本地沙箱运行，守护隐私，助力高能开发。
+          </p>
+        </div>
+        <div class="footer-links">
+          <div class="link-group">
+            <h5>导航</h5>
+            <a href="#features">功能特点</a>
+            <a href="#workflow">使用步骤</a>
+            <a href="#faq">常见问题</a>
+          </div>
+          <div class="link-group">
+            <h5>相关</h5>
+            <a href="privacy.html">隐私政策</a>
+            <a href="https://github.com" target="_blank" rel="noopener">GitHub 仓库</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>2026 &copy; Codex登陆助手</p>
+        <div class="footer-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+          <span>已通过本地 Chromium 安全审计</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 引入 JavaScript -->
+  <script src="script.js"></script>
+</body>
+
+</html>
