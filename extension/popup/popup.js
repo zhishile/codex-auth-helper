@@ -109,24 +109,24 @@ function bindEvents() {
     window.close(); // 关闭 popup 窗口
   });
 
-  // 2. 下载 auth.json (采用安全的数据 URL 模式，彻底避免 Blob 临时内存销毁导致的浏览器进程崩溃)
+  // 2. 导出 auth.json — 委托给 background service worker 执行下载
   document.getElementById('btn-download').addEventListener('click', () => {
     if (!globalSession) return;
     const authJsonString = generateCodexAuthJson(globalSession);
     
-    // 使用完全闭环、自包含的 Data URL 格式，规避 origin 销毁及 GC 引起的 use-after-free 漏洞
-    const dataUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(authJsonString);
-    
-    chrome.downloads.download({
-      url: dataUrl,
-      filename: 'auth.json',
-      saveAs: false
-    }, (downloadId) => {
+    chrome.runtime.sendMessage({
+      action: 'download_auth_json',
+      jsonContent: authJsonString
+    }, (response) => {
       if (chrome.runtime.lastError) {
-        console.error('下载遇到异常:', chrome.runtime.lastError);
+        console.error('下载通信异常:', chrome.runtime.lastError);
         showToast('❌ 下载失败，请重新尝试');
-      } else {
+        return;
+      }
+      if (response && response.success) {
         showToast('🎉 auth.json 已开始下载');
+      } else {
+        showToast('❌ 下载失败，请重新尝试');
       }
     });
   });
@@ -179,6 +179,11 @@ function formatLocalDate(date) {
 
 /**
  * 核心转换逻辑：将获取到的 ChatGPT Session 数据转化为符合 Codex 要求的格式
+ * 
+ * ⚠️ 已知限制：refresh_token 使用的是 ChatGPT 的 sessionToken，
+ * 它不是真正的 OAuth2 refresh_token（真正的 refresh_token 只能通过 auth.openai.com
+ * 的验证流程获取，而该流程需要手机验证——正是本插件想绕过的障碍）。
+ * Codex 在尝试刷新 token 时可能会失败，届时需要重新导出 auth.json。
  */
 function generateCodexAuthJson(session) {
   const accountId = session.account?.id || '';
@@ -187,45 +192,34 @@ function generateCodexAuthJson(session) {
   const iat = Math.floor(Date.now() / 1000);
   const exp = session.expires ? Math.floor(new Date(session.expires).getTime() / 1000) : iat + (30 * 24 * 3600);
 
-  // 1. 构建与原始 JWT 结构对齐的 Synthetic id_token
-  // 头部申明无签名 JWT
-  const jwtHeader = {
-    alg: 'none',
-    typ: 'JWT',
-    cpa_synthetic: true
-  };
-
-  // JWT 核心 Payload，填充 Codex 鉴权所需的全部字段
+  // 构建 Synthetic id_token (无签名 JWT)
+  const jwtHeader = { alg: 'none', typ: 'JWT', cpa_synthetic: true };
   const jwtPayload = {
-    iat: iat,
-    exp: exp,
+    iat, exp,
     "https://api.openai.com/auth": {
       chatgpt_account_id: accountId,
       chatgpt_plan_type: planType,
       chatgpt_user_id: session.user?.id || '',
       user_id: session.user?.id || ''
     },
-    email: email
+    email
   };
 
-  // Base64Url 编码
   const base64UrlEncode = (obj) => {
     const str = JSON.stringify(obj);
     const base64 = btoa(unescape(encodeURIComponent(str)));
     return base64.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
   };
 
-  // 合成无签名形式的 id_token，末尾附加 .synthetic 后缀确保合法辨识
   const syntheticIdToken = `${base64UrlEncode(jwtHeader)}.${base64UrlEncode(jwtPayload)}.synthetic`;
 
-  // 2. 构造目标输出的 auth.json 统一格式
   const authConfig = {
     auth_mode: "chatgpt",
     OPENAI_API_KEY: null,
     tokens: {
       id_token: syntheticIdToken,
       access_token: session.accessToken,
-      refresh_token: "",
+      refresh_token: session.sessionToken || "placeholder",
       account_id: accountId
     },
     last_refresh: new Date().toISOString()

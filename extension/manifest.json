@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Codex认证助手",
   "short_name": "Codex Auth Helper",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "安全地在本地导出您的已登录 ChatGPT 会话配置，生成符合 Codex 规范的 auth.json 本地备份文件。纯本地离线处理。",
   "permissions": [
     "downloads"

@@ -1,4 +1,4 @@
-// background.js — Service Worker 异步获取 Session 数据
+// background.js — Service Worker 异步获取 Session 数据 + 文件下载
 // 符合 Manifest V3 最佳实践，避免全局状态丢失
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -13,6 +13,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ success: false, error: error.message });
       });
     return true; // 重要：保持异步通信通道开启
+  }
+
+  if (message.action === 'download_auth_json') {
+    // 在 Service Worker 进程中执行下载，完全独立于 Popup 生命周期
+    const dataUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(message.jsonContent);
+    chrome.downloads.download({
+      url: dataUrl,
+      filename: 'auth.json',
+      saveAs: false
+    }, (downloadId) => {
+      if (chrome.runtime.lastError) {
+        console.error('下载异常:', chrome.runtime.lastError);
+        sendResponse({ success: false, error: chrome.runtime.lastError.message });
+      } else {
+        sendResponse({ success: true, downloadId: downloadId });
+      }
+    });
+    return true; // 保持异步通信通道开启
   }
 });
 
