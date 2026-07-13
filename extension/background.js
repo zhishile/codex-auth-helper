@@ -57,10 +57,20 @@ async function fetchChatGPTSession() {
   }
 
   const data = await response.json();
-  
+
   // 校验是否获取到了合法的 accessToken，若为空或未定义则判定为未登录
   if (!data || !data.accessToken) {
     throw new Error('UNAUTHORIZED');
+  }
+
+  // 从 Cookie 读取真正的 refresh_token (sessionToken)
+  const cookie = await chrome.cookies.get({
+    url: 'https://chatgpt.com/',
+    name: '__Secure-next-auth.session-token'
+  });
+
+  if (cookie && cookie.value) {
+    data.refreshToken = cookie.value;
   }
 
   return data;

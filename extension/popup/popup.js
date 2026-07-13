@@ -179,10 +179,12 @@ function formatLocalDate(date) {
 
 /**
  * 核心转换逻辑：将获取到的 ChatGPT Session 数据转化为符合 Codex 要求的格式
- * 
- * ⚠️ 已知限制：refresh_token 使用的是 ChatGPT 的 sessionToken，
- * 它不是真正的 OAuth2 refresh_token（真正的 refresh_token 只能通过 auth.openai.com
- * 的验证流程获取，而该流程需要手机验证——正是本插件想绕过的障碍）。
+ *
+ * refresh_token 从 __Secure-next-auth.session-token Cookie 中读取，
+ * 该 Cookie 是 ChatGPT Web 端用于维持登录会话的核心凭证。
+ *
+ * ⚠️ 已知限制：该 Cookie 不是真正的 OAuth2 refresh_token（真正的 refresh_token
+ * 只能通过 auth.openai.com 的验证流程获取，而该流程需要手机验证——正是本插件想绕过的障碍）。
  * Codex 在尝试刷新 token 时可能会失败，届时需要重新导出 auth.json。
  */
 function generateCodexAuthJson(session) {
@@ -219,7 +221,7 @@ function generateCodexAuthJson(session) {
     tokens: {
       id_token: syntheticIdToken,
       access_token: session.accessToken,
-      refresh_token: session.sessionToken || "placeholder",
+      refresh_token: session.refreshToken || "",
       account_id: accountId
     },
     last_refresh: new Date().toISOString()
