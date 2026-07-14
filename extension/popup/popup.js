@@ -178,50 +178,99 @@ function formatLocalDate(date) {
 }
 
 /**
- * 核心转换逻辑：将获取到的 ChatGPT Session 数据转化为符合 Codex 要求的格式
+ * 核心转换逻辑：将获取到的 ChatGPT Session 数据转化为符合 Codex 要求的 auth.json 格式
  *
- * refresh_token 从 __Secure-next-auth.session-token Cookie 中读取，
- * 该 Cookie 是 ChatGPT Web 端用于维持登录会话的核心凭证。
+ * id_token 采用合成 JWT（alg: none），payload 尽可能从 Session 数据中补齐所有可用 claims，
+ * 结构与 auth.openai.com 签发的真实 id_token 对齐。
  *
- * ⚠️ 已知限制：该 Cookie 不是真正的 OAuth2 refresh_token（真正的 refresh_token
- * 只能通过 auth.openai.com 的验证流程获取，而该流程需要手机验证——正是本插件想绕过的障碍）。
- * Codex 在尝试刷新 token 时可能会失败，届时需要重新导出 auth.json。
+ * refresh_token 优先级：
+ *   1. Session API 响应中的 refreshToken（rt.1.xxx OAuth 格式，少数情况下可能返回）
+ *   2. __Secure-next-auth.session-token Cookie 值
+ *   3. 空字符串
+ *
+ * ⚠️ 已知限制：ChatGPT Web Session API 不直接暴露 auth.openai.com 签发的 RS256 id_token
+ *   和 rt.1.xxx 格式 refresh_token，因此 id_token 只能合成为占位格式，refresh_token
+ *   降级为 Session Cookie。Codex 刷新 token 可能失败，届时需重新导出 auth.json。
  */
 function generateCodexAuthJson(session) {
   const accountId = session.account?.id || '';
   const email = session.user?.email || '';
   const planType = session.account?.planType || 'free';
+  const userId = session.user?.id || '';
+  const userName = session.user?.name || '';
+  const authProvider = session.authProvider || '';
   const iat = Math.floor(Date.now() / 1000);
   const exp = session.expires ? Math.floor(new Date(session.expires).getTime() / 1000) : iat + (30 * 24 * 3600);
 
-  // 构建 Synthetic id_token (无签名 JWT)
-  const jwtHeader = { alg: 'none', typ: 'JWT', cpa_synthetic: true };
-  const jwtPayload = {
-    iat, exp,
-    "https://api.openai.com/auth": {
-      chatgpt_account_id: accountId,
-      chatgpt_plan_type: planType,
-      chatgpt_user_id: session.user?.id || '',
-      user_id: session.user?.id || ''
-    },
-    email
+  // 构建 https://api.openai.com/auth 命名空间下的 claims
+  const openaiAuthClaims = {
+    chatgpt_account_id: accountId,
+    chatgpt_plan_type: planType,
+    chatgpt_user_id: userId,
+    user_id: userId,
+    groups: [],
+    localhost: true
   };
 
-  const base64UrlEncode = (obj) => {
-    const str = JSON.stringify(obj);
-    const base64 = btoa(unescape(encodeURIComponent(str)));
-    return base64.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+  // 若 Session 中包含 organizations 数据则一并加入
+  if (session.account?.organizations) {
+    openaiAuthClaims.organizations = session.account.organizations;
+  }
+  if (session.account?.organization) {
+    openaiAuthClaims.organization = session.account.organization;
+  }
+  if (session.account?.plan_type) {
+    openaiAuthClaims.chatgpt_plan_type = session.account.plan_type;
+  }
+
+  // 构建 id_token Payload（与 auth.openai.com 签发的真实 id_token 结构对齐）
+  var jwtPayload = {
+    iss: 'https://auth.openai.com',
+    iat: iat,
+    exp: exp,
+    email: email,
+    'https://api.openai.com/auth': openaiAuthClaims
   };
 
-  const syntheticIdToken = `${base64UrlEncode(jwtHeader)}.${base64UrlEncode(jwtPayload)}.synthetic`;
+  // 补齐可从 Session 中获取的身份 claims
+  if (userName) {
+    jwtPayload.name = userName;
+  }
+  if (authProvider) {
+    jwtPayload.auth_provider = authProvider;
+  }
+  if (session.user?.iat) {
+    jwtPayload.auth_time = session.user.iat;
+  }
+  if (session.user?.email_verified !== undefined) {
+    jwtPayload.email_verified = session.user.email_verified;
+  }
 
-  const authConfig = {
-    auth_mode: "chatgpt",
+  // 若有真实的 idToken 则直接使用（极少数情况下 Session API 可能包含）
+  var idToken = session.idToken || session.id_token;
+
+  if (!idToken) {
+    // 合成 id_token: header.claims.synthetic 格式
+    var base64UrlEncode = function (obj) {
+      var str = JSON.stringify(obj);
+      var base64 = btoa(unescape(encodeURIComponent(str)));
+      return base64.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    };
+
+    var jwtHeader = { alg: 'none', typ: 'JWT', cpa_synthetic: true };
+    idToken = base64UrlEncode(jwtHeader) + '.' + base64UrlEncode(jwtPayload) + '.synthetic';
+  }
+
+  // refresh_token 优先级: API 返回 > Cookie 兜底 > 空字符串
+  var refreshToken = session.refreshToken || '';
+
+  var authConfig = {
+    auth_mode: 'chatgpt',
     OPENAI_API_KEY: null,
     tokens: {
-      id_token: syntheticIdToken,
+      id_token: idToken,
       access_token: session.accessToken,
-      refresh_token: session.refreshToken || "",
+      refresh_token: refreshToken,
       account_id: accountId
     },
     last_refresh: new Date().toISOString()

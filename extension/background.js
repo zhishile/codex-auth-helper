@@ -63,14 +63,17 @@ async function fetchChatGPTSession() {
     throw new Error('UNAUTHORIZED');
   }
 
-  // 从 Cookie 读取真正的 refresh_token (sessionToken)
-  const cookie = await chrome.cookies.get({
-    url: 'https://chatgpt.com/',
-    name: '__Secure-next-auth.session-token'
-  });
-
-  if (cookie && cookie.value) {
-    data.refreshToken = cookie.value;
+  // refresh_token 优先级: API 响应中的 refreshToken (rt.1.xxx OAuth 格式) >
+  //                         Cookie session token >
+  //                         不设置（留空）
+  if (!data.refreshToken) {
+    const cookie = await chrome.cookies.get({
+      url: 'https://chatgpt.com/',
+      name: '__Secure-next-auth.session-token'
+    });
+    if (cookie && cookie.value) {
+      data.refreshToken = cookie.value;
+    }
   }
 
   return data;
