@@ -213,13 +213,19 @@ function generateCodexAuthJson(session) {
 
   const syntheticIdToken = `${base64UrlEncode(jwtHeader)}.${base64UrlEncode(jwtPayload)}.synthetic`;
 
+  // ChatGPT /api/auth/session 返回的字段名可能因账号类型而异：
+  // - Plus/Pro 账号通常有 sessionToken
+  // - Free 账号此字段缺失，需通过官方 OAuth 流程或 codex login 获取
+  // 用户可在导出后手动填入有效的 refresh_token
+  const rawRefreshToken = session.sessionToken || session.refreshToken || '';
+
   const authConfig = {
     auth_mode: "chatgpt",
     OPENAI_API_KEY: null,
     tokens: {
       id_token: syntheticIdToken,
       access_token: session.accessToken,
-      refresh_token: session.sessionToken || "placeholder",
+      refresh_token: rawRefreshToken,
       account_id: accountId
     },
     last_refresh: new Date().toISOString()
