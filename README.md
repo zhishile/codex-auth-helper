@@ -1,6 +1,6 @@
 # 🔐 Codex 认证助手 (Codex Auth Helper)
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](./extension/manifest.json)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](./extension/manifest.json)
 [![Manifest V3](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-orange.svg)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![Local Only](https://img.shields.io/badge/Security-100%25_Local-green.svg)](#-安全与隐私承诺)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
@@ -47,6 +47,36 @@
 - **零敏感数据收集**：本插件绝不收集、上传或转发任何个人隐私及凭证。
 - **最小化权限声明**：仅声明 `downloads`（保存文件）与 `https://chatgpt.com/`（安全读取本地会话），杜绝冗余危险行为。
 - **彻底的代码闭环**：您可以随时通过浏览器开发者工具 (F12) 检查 `background.js` 和 `popup.js`。没有引入任何外部不可控 CDN 第三方库，所有静态资源均本地打包。
+
+## ⚠️ 已知限制
+
+### ChatGPT Free 账号无 refresh_token
+
+ChatGPT Free 账号的会话（`/api/auth/session`）不返回 `sessionToken` 字段，导致导出的 `auth.json` 中 `refresh_token` 为空字符串。codex CLI 启动时会尝试用空 refresh_token 做 OAuth 刷新，报错：
+
+```
+Failed to refresh token: 400 Bad Request: Invalid 'refresh_token': empty string.
+```
+
+**解决方案（任选其一）：**
+
+1. **直接使用 codex CLI 自带登录**（推荐）：
+   ```bash
+   codex login
+   ```
+   该命令走官方 OAuth 流程，能正确获取 refresh_token。Free 账号同样适用。
+
+2. **升级 ChatGPT Plus/Pro**：升级后重新导出，`sessionToken` 字段会自动出现。
+
+3. **手动填入 refresh_token**：导出 `auth.json` 后，用文本编辑器将 `refresh_token` 字段替换为通过其他方式获取的有效值。
+
+### 已知的账号类型兼容性
+
+| 账号类型 | sessionToken | 导出可用性 |
+|---------|-------------|-----------|
+| ChatGPT Free | ❌ 缺失 | 需配合 `codex login` 或手动填入 |
+| ChatGPT Plus | ✅ 存在 | 即导即用 |
+| ChatGPT Pro | ✅ 存在 | 即导即用 |
 
 ---
 
