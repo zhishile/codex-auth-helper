@@ -1,3 +1,5 @@
+**简体中文** | [English](README.en.md)
+
 # 🔐 Codex 认证助手 (Codex Auth Helper)
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](./extension/manifest.json)
