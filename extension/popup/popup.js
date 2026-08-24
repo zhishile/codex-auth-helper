@@ -69,6 +69,7 @@ function renderAuthorizedState(session) {
   const emailEl = document.getElementById('user-email');
   const planEl = document.getElementById('badge-plan');
   const expiresEl = document.getElementById('token-expires');
+  const refreshTokenWarningEl = document.getElementById('refresh-token-warning');
 
   // 用户个人信息
   const user = session.user || {};
@@ -96,6 +97,11 @@ function renderAuthorizedState(session) {
   } else {
     expiresEl.textContent = '长期有效';
     document.getElementById('token-countdown').textContent = '无限';
+  }
+
+  // 检查 refresh_token 是否为空
+  if (!session.sessionToken) {
+    refreshTokenWarningEl.style.display = 'flex';
   }
 }
 
@@ -213,13 +219,19 @@ function generateCodexAuthJson(session) {
 
   const syntheticIdToken = `${base64UrlEncode(jwtHeader)}.${base64UrlEncode(jwtPayload)}.synthetic`;
 
+  // 检查 refresh_token 是否为空
+  const refreshToken = session.sessionToken || "placeholder";
+  if (!session.sessionToken) {
+    console.warn('⚠️ refresh_token 为空，Codex 可能无法正常工作。请确保已登录 ChatGPT。');
+  }
+
   const authConfig = {
     auth_mode: "chatgpt",
     OPENAI_API_KEY: null,
     tokens: {
       id_token: syntheticIdToken,
       access_token: session.accessToken,
-      refresh_token: session.sessionToken || "placeholder",
+      refresh_token: refreshToken,
       account_id: accountId
     },
     last_refresh: new Date().toISOString()
