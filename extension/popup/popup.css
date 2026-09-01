@@ -368,6 +368,12 @@ body {
   font-weight: 600;
 }
 
+.text-warning {
+  color: var(--warning);
+  text-shadow: 0 0 4px rgba(245, 158, 11, 0.4);
+  font-weight: 600;
+}
+
 /* 按钮微型复制 */
 .btn-mini-copy, .btn-code-copy {
   background: transparent;
