@@ -178,12 +178,15 @@ function formatLocalDate(date) {
 }
 
 /**
- * 核心转换逻辑：将获取到的 ChatGPT Session 数据转化为符合 Codex 要求的格式
- * 
- * ⚠️ 已知限制：refresh_token 使用的是 ChatGPT 的 sessionToken，
- * 它不是真正的 OAuth2 refresh_token（真正的 refresh_token 只能通过 auth.openai.com
- * 的验证流程获取，而该流程需要手机验证——正是本插件想绕过的障碍）。
- * Codex 在尝试刷新 token 时可能会失败，届时需要重新导出 auth.json。
+ * 核心转换逻辑：将获取到的 ChatGPT Session 数据转化为 Codex 可加载的 auth.json
+ *
+ * ⚠️ 重要限制：这里导出的文件**不含可刷新的凭据**。
+ * 真正的 refresh_token 只能由 auth.openai.com 的 OAuth 流程（offline_access + PKCE，
+ * 用 authorization code 换取）签发；ChatGPT 网页会话的 /api/auth/session 与
+ * NextAuth 会话 Cookie 都不是该端点签发的，即使写进去也会被 Codex 的刷新请求拒绝。
+ *
+ * 因此本文件只能让 Codex 临时进入已授权状态。导入后请按 popup 中的提示，
+ * 在 Codex 客户端里“退出登录 → 重新登录”完成官方授权，或直接使用 `codex login`。
  */
 function generateCodexAuthJson(session) {
   const accountId = session.account?.id || '';
@@ -219,7 +222,8 @@ function generateCodexAuthJson(session) {
     tokens: {
       id_token: syntheticIdToken,
       access_token: session.accessToken,
-      refresh_token: session.sessionToken || "placeholder",
+      // 网页会话拿不到 auth.openai.com 签发的 refresh_token，这里不写入任何伪造的占位值
+      refresh_token: "",
       account_id: accountId
     },
     last_refresh: new Date().toISOString()

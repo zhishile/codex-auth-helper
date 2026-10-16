@@ -20,7 +20,7 @@
         </svg>
         <div class="logo-text">
           <h1>Codex 登陆助手</h1>
-          <span class="logo-sub">Codex Auth Helper v1.0.0</span>
+          <span class="logo-sub">Codex Auth Helper v1.2.0</span>
         </div>
       </div>
     </header>
@@ -97,6 +97,29 @@
           </button>
         </div>
 
+
+        <!-- 重要限制说明：本文件不含可刷新的凭据 -->
+        <div class="notice-card">
+          <div class="notice-header">
+            <svg class="notice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m0 3h.01M10.34 3.94l-7.6 13.16A1.5 1.5 0 004.04 19.5h15.92a1.5 1.5 0 001.3-2.4l-7.6-13.16a1.5 1.5 0 00-2.6 0z" />
+            </svg>
+            <h4>该文件不能长期使用</h4>
+          </div>
+          <p class="notice-text">
+            网页会话无法生成 <code>refresh_token</code>——它只能由 <code>auth.openai.com</code> 的 OAuth 流程签发。
+            因此本文件仅临时可用，Codex 刷新时会提示 <code>Your access token could not be refreshed</code>。
+            请用下面任一方式完成官方登录：
+          </p>
+          <ol class="notice-list">
+            <li>导入本文件后，在 Codex 客户端里<b>退出登录 → 重新登录</b>（保留 <code>auth.json</code>，不要删除）</li>
+            <li>或执行 <code>codex login</code> / <code>codex login --device-auth</code></li>
+            <li>ChatGPT → Settings → Security 配置 Passkey / Authenticator，用 <code>Try another method</code> 代替短信</li>
+          </ol>
+          <p class="notice-foot">完整说明见仓库 README 的「已知限制与可用方案」。</p>
+        </div>
+
         <!-- 使用帮助提示 (折叠卡，默认关闭) -->
         <details class="accordion-card">
           <summary class="accordion-header">
@@ -128,8 +151,8 @@
               <div class="step-item">
                 <span class="step-num">3</span>
                 <div class="step-content">
-                  <h5>第三步：启动 Codex</h5>
-                  <p>文件放置完成后，直接启动或重启您的 Codex 客户端，即可自动加载授权，免除任何手机号验证流程。</p>
+                  <h5>第三步：启动 Codex 并完成官方登录</h5>
+                  <p>启动或重启 Codex 客户端。若提示 <code>Your access token could not be refreshed</code>，请<b>保留 <code>auth.json</code> 不要删除</b>，在客户端里点“退出登录”后重新登录——此时会走官方 OAuth 流程，多数付费账号不再要求手机短信验证。</p>
                 </div>
               </div>
             </div>
