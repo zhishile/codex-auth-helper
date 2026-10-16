@@ -492,6 +492,78 @@ body {
 }
 
 /* 折叠手风琴卡片系统 */
+/* 重要限制提示卡 */
+.notice-card {
+  width: 100%;
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.notice-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.notice-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--warning);
+  flex-shrink: 0;
+}
+
+.notice-header h4 {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--warning);
+  letter-spacing: 0.2px;
+}
+
+.notice-text {
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.notice-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.notice-list li {
+  position: relative;
+  padding-left: 12px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.notice-list li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--warning);
+}
+
+.notice-list li b {
+  color: var(--text-primary);
+}
+
+.notice-foot {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
 .accordion-card {
   width: 100%;
   background: rgba(255, 255, 255, 0.02);
@@ -637,7 +709,8 @@ details summary {
   line-height: 1.4;
 }
 
-.step-content code {
+.step-content code,
+.notice-card code {
   font-family: Menlo, Monaco, Consolas, monospace;
   font-size: 9.5px;
   background: rgba(0, 0, 0, 0.3);
